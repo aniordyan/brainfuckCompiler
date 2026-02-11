@@ -76,7 +76,7 @@ func generateAssembly(tokens []int, name string) error
   stack := []int{}
 //headers
   fmt.Fprintf(file, ".section .bss\n")
-  fmt.Fprintf(file, "tape: .skip\n")
+  fmt.Fprintf(file, "tape: .skip 30000\n")
   fmt.Fprintf(file, ".section .text\n")
   fmt.Fprintf(file, ".global _start\n")
   fmt.Fprintf(file, "_start:\n")
