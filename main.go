@@ -71,7 +71,19 @@ func generateAssembly(tokens []int, name string) error
 //create .s file
 
   file, err := os.Create(name)
+
+  depth := 0
+  stack := []int{}
 //headers
+  fmt.Fprintf(file, ".section .bss\n")
+  fmt.Fprintf(file, "tape: .skip\n")
+  fmt.Fprintf(file, ".section .text\n")
+  fmt.Fprintf(file, ".global _start\n")
+  fmt.Fprintf(file, "_start:\n")
+  fmt.Fprintf(file, "leaq tape(%%rip), %%r12\n")
+
+
+
 
   for_, tok := range tokens 
   {
@@ -98,9 +110,32 @@ func generateAssembly(tokens []int, name string) error
                         fmt.Fprintf(file, "movq $1, %%rdx\n")
                         fmt.Fprintf(file, "syscall\n")
 		case '[':
-                        fmt.Fprintf(file, "incq %%r12\n")
+			current := depth
+			depth++
+			stack = append(stack, current)
+			
+			fmt.Fprintf(file, "loop_open_%d:\n", current) //to label each nestedloop
+			fmt.Fprintf(file, "cmpb $0, (%%r12)\n")
+			fmt.Fprintf(file, "je loop_close_%d\n", current)
+
 		case ']':
-                        fmt.Fprintf(file, "incq %%r12\n")	
+			//pop from stack
+			current := stack[len(stack)-1]
+			stack := stack [:len(stack) - 1]
+
+                        fmt.Fprintf(file, "cmpb $0, (%%r12)\n")
+			fmt.Fprintf(file, "jne loop_open_%d\n", current)
+			fmt.Fprintf(file, "loop_close_%d\n", current)
+	
+
+
 	}
   }
+
+  //footer
+  fmt.Fprintf(file, "movq $60, %%rax\n")
+  fmt.Fprintf(file, "xorq %%rdi, %%rdi\n")
+  fmt.Fprintf(file, "syscall\n")
+
+  return nil
 }
