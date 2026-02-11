@@ -63,3 +63,44 @@ if depth != 0
 return nil
 
 }
+
+
+func generateAssembly(tokens []int, name string) error
+
+{
+//create .s file
+
+  file, err := os.Create(name)
+//headers
+
+  for_, tok := range tokens 
+  {
+	switch tok
+	{
+		case '>':
+			fmt.Fprintf(file, "incq %%r12\n")
+		case '<':
+                        fmt.Fprintf(file, "decq %%r12\n")
+		case '+':
+                        fmt.Fprintf(file, "incb (%%r12)\n")
+		case '.':
+                        fmt.Fprintf(file, "movq $1, %%rax\n")
+			fmt.Fprintf(file, "movq $1, %%rdi\n")
+			fmt.Fprintf(file, "movq %%r12, %%rsi\n")
+			fmt.Fprintf(file, "movq $1, %%rdx\n")
+			fmt.Fprintf(file, "syscall\n")
+		case '-':
+                        fmt.Fprintf(file, "decb (%%r12)\n")
+		case ',':
+                        fmt.Fprintf(file, "movq $0, %%rax\n")
+                        fmt.Fprintf(file, "movq $0, %%rdi\n")
+                        fmt.Fprintf(file, "movq %%r12, %%rsi\n")
+                        fmt.Fprintf(file, "movq $1, %%rdx\n")
+                        fmt.Fprintf(file, "syscall\n")
+		case '[':
+                        fmt.Fprintf(file, "incq %%r12\n")
+		case ']':
+                        fmt.Fprintf(file, "incq %%r12\n")	
+	}
+  }
+}
