@@ -10,19 +10,24 @@ import
 
 func main ()
 {
-
+ 
+ inputFile := os.Args[1]	
+ name := strings.TrimSuffix(inputFile, ".bf")
+ assembly := name + ".s"
+ obj := name + ".o"
+ exe := name
 }
 
 
-func scanner (input string) []int
+func scanner (input string) []byte
 {
  validInput := "><+-.,[]"
- tokens := []int{}
+ tokens := []byte{}
 
  for i:= 0; i < len(input); i++
  {
    char := input[i]
-   if strings.ContainRune(validInput, rune(char))
+   if strings.ContainsRune(validInput, rune(char))
    {
 	   tokens = append (tokens, char)
    }
@@ -32,7 +37,7 @@ func scanner (input string) []int
  
 }
 
-func parser (tokens []int) error 
+func parser (tokens []byte) error 
 {
  //tried to implement stack logic
  depth := 0
@@ -76,7 +81,7 @@ func generateAssembly(tokens []int, name string) error
   stack := []int{}
 //headers
   fmt.Fprintf(file, ".section .bss\n")
-  fmt.Fprintf(file, "tape: .skip 30000\n")
+  fmt.Fprintf(file, "tape: .skip 30000\n") //bf's memory size
   fmt.Fprintf(file, ".section .text\n")
   fmt.Fprintf(file, ".global _start\n")
   fmt.Fprintf(file, "_start:\n")
@@ -138,4 +143,26 @@ func generateAssembly(tokens []int, name string) error
   fmt.Fprintf(file, "syscall\n")
 
   return nil
+}
+
+
+func executing (assembly, obj, exe sting) error
+{
+	cmd := exec.Command ("as", assembly, "-o", obj)
+        
+	cmd.Stderr = os.Stderr
+        if err := cmd.Run(); err != nil
+	{
+        return fmt.Errorf("assembler failed: %v", err)
+        }
+
+	cmd := exec.Command ("ld", obj, "-o", exe)
+	cmd.Stderr = os.Stderr
+        if err := cmd.Run(); err != nil
+	{
+        return fmt.Errorf("linker failed: %v", err)
+        }
+
+    return nil
+
 }
