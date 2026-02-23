@@ -122,30 +122,6 @@ Run the generated executable:
 
 This will print 'Hello World!'
 
-## Error Handling
-
-The compiler will report errors in the following cases:
-
-- No input file specified
-- Input file does not have a `.bf` extension
-- Input file cannot be read
-- Unmatched brackets in the source code
-- Assembly or linking errors
-
-## Examples
-
-### Example 1: Print a Single Character
-
-```brainfuck
-+++.
-```
-
-This program increments cell 0 three times and prints it (ASCII value 3).
-
-### Example 2: Hello World
-
-```brainfuck
-++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.
 ```
 
 This is a classic Hello World program in Brainfuck.
